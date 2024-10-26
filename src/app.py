@@ -15,7 +15,12 @@ bot = commands.Bot(command_prefix="/", intents=intents)
 
 @bot.event
 async def on_ready():
-    print(f"Logged in as {bot.user} (ID: {bot.user.id})")
+    user = bot.user
+
+    if not user:
+        raise ValueError("Bot user does not exist")
+
+    print(f"Logged in as {user} (ID: {user.id})")
     print("------")
 
 
