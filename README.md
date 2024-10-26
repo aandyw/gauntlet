@@ -1,4 +1,5 @@
 # Gauntlet
+Discord bot to create custom tourneys for ELO character ranking
 
 ## Local Development
 
