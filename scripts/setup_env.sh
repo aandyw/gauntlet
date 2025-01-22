@@ -15,6 +15,6 @@ pip install --upgrade pip setuptools wheel
 
 log "Installing dependencies..."
 pip install uv
-uv pip install -r pyproject.toml --extra dev
+uv pip install -e .[dev]
 
 log "Environment setup complete. Virtual environment is activated!"

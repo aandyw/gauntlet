@@ -3,41 +3,26 @@ requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "project-ml-template"
-version = "0.1.0"
-description = "Template ML project"
-readme = "README.md"
-requires-python = ">=3.11"
-
-
-dependencies = []
+name = "guantlet"
+version = "0.0.1"
+description = "Discord bot to create custom tourneys for ELO character ranking."
+requires-python = ">=3.9"
+dependencies = [
+    "discord.py==2.4.0",
+    "python-dotenv",
+]
 
 [project.optional-dependencies]
 dev = [
-    "black==24.10.0",
-    "ruff==0.8.0",
-    "isort==5.13.2",
-    "pyright==1.1.389",
+    "black",  # Formatter
+    "ruff",   # Linter
+    "isort",  # Import sorter
 ]
 
 [tool.setuptools.packages.find]
-where = ["src"]
+# where = ["."]
+include = ["ai", "api"]
+# exclude = [".venv*", ".env*", "scripts", "build"]
 
 [tool.black]
 line-length = 88
-
-[tool.isort]
-profile = "black"
-
-[tool.ruff]
-line-length = 88
-include = ["src/*"]
-exclude = [".venv*", "**/__pycache__"]
-
-[tool.ruff.lint.per-file-ignores]
-"**/__init__.py" = ["F401"]
-
-[tool.pyright]
-include = ["bot/*"]
-exclude = [".venv*", "**/__pycache__", "**/__init__.py"]
-typeCheckingMode = "off"
