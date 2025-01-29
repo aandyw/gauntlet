@@ -3,92 +3,69 @@ from discord.ext import commands
 from discord import app_commands
 from itertools import combinations
 
+from cogs.tournament.base import Tournament, Character, Match, TournamentStatus
 
-class Tournament(commands.Cog):
+
+class TournamentCog(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.tournaments: dict[str, dict] = {}
+        self.tournaments: dict[str, Tournament] = {}
 
-    @app_commands.command(name="create", description="Create a new tournament.")
-    async def create(self, interaction: discord.Interaction, name: str):
-        """Create a new tournament."""
-        if name in self.tournaments:
-            await interaction.response.send_message(
-                f"A tournament named '{name}' already exists.", ephemeral=True
-            )
-            return
-
-        self.tournaments[name] = {
-            "characters": [],
-            "matches": [],
-            "status": "open",
-        }
-
-        await interaction.response.send_message(
-            f"Tournament '{name}' created successfully!"
-        )
-
-    @app_commands.command(
-        name="add_character", description="Add a character to a tournament."
-    )
-    async def add_character(
-        self, interaction: discord.Interaction, tournament_name: str, character: str
-    ):
-        """Add a character to a tournament."""
-        tournament = self.tournaments.get(tournament_name)
-        if not tournament:
-            await interaction.response.send_message(
-                f"Tournament '{tournament_name}' does not exist.", ephemeral=True
-            )
-            return
-
-        if tournament["status"] != "open":
-            await interaction.response.send_message(
-                "Cannot add characters to a tournament that is not open.",
-                ephemeral=True,
-            )
-            return
-
-        if character in tournament["characters"]:
-            await interaction.response.send_message(
-                f"Character '{character}' is already in the tournament.", ephemeral=True
-            )
-            return
-
-        tournament["characters"].append(character)
-        await interaction.response.send_message(
-            f"Character '{character}' added to tournament '{tournament_name}'."
-        )
-
-    @app_commands.command(name="list", description="List all tournaments.")
-    async def list_tournaments(self, interaction: discord.Interaction):
-        """List all tournaments."""
-        if not self.tournaments:
-            await interaction.response.send_message(
-                "No tournaments have been created yet.", ephemeral=True
-            )
-            return
-
-        embed = discord.Embed(title="Tournaments", color=discord.Color.blue())
-        for name, details in self.tournaments.items():
-            embed.add_field(
-                name=name,
-                value=f"Status: {details['status']}\nCharacters: {len(details['characters'])}",
-                inline=False,
-            )
-        await interaction.response.send_message(embed=embed)
-
-    @app_commands.command(name="start", description="Start a tournament.")
-    async def start_tournament(self, interaction: discord.Interaction, name: str):
-        """Start a tournament."""
+    async def _get_tournament(
+        self, interaction: discord.Interaction, name: str
+    ) -> Tournament | None:
         tournament = self.tournaments.get(name)
+
         if not tournament:
             await interaction.response.send_message(
                 f"Tournament '{name}' does not exist.", ephemeral=True
             )
             return
 
-        if tournament["status"] != "open":
+        return tournament
+
+    @app_commands.command(name="create", description="Create a new tournament.")
+    async def create(self, interaction: discord.Interaction, name: str):
+        if name in self.tournaments:
+            await interaction.response.send_message(
+                f"A tournament named '{name}' already exists.", ephemeral=True
+            )
+            return
+
+        self.tournaments[name] = Tournament(name=name)
+        await interaction.response.send_message(
+            f"Tournament '{name}' created successfully!"
+        )
+
+    @app_commands.command(name="list", description="List all tournaments.")
+    async def list(self, interaction: discord.Interaction):
+        if not self.tournaments:
+            await interaction.response.send_message(
+                "No tournaments have been created yet.", ephemeral=True
+            )
+            return
+
+        # TODO: Turn these into views / modals
+        embed = discord.Embed(title="Tournaments", color=discord.Color.blue())
+        for name, tournament in self.tournaments.items():
+            embed.add_field(
+                name=name,
+                value=(
+                    f"Status: {tournament.status}"
+                    f"Characters: {len(tournament.characters)}"
+                ),
+                inline=False,
+            )
+        await interaction.response.send_message(embed=embed)
+
+    @app_commands.command(name="start", description="Start a tournament.")
+    async def start(self, interaction: discord.Interaction, name: str):
+        tournament = await self._get_tournament(interaction, name)
+
+        if not tournament:
+            return
+
+        if tournament.status != "open":
             await interaction.response.send_message(
                 f"Tournament '{name}' is already started or completed.", ephemeral=True
             )
@@ -108,25 +85,79 @@ class Tournament(commands.Cog):
         )
 
     @app_commands.command(name="view", description="View tournament details.")
-    async def view_tournament(self, interaction: discord.Interaction, name: str):
-        """View tournament details."""
-        tournament = self.tournaments.get(name)
-        if not tournament:
+    async def view(self, interaction: discord.Interaction, name: str):
+        # tournament = self._get_tournament(interaction, name)
+
+        # embed = discord.Embed(title=f"Tournament: {name}", color=discord.Color.green())
+        # embed.add_field(name="Status", value=tournament.status, inline=False)
+        # embed.add_field(
+        #     name="Characters", value=", ".join(char.name for char in tournament.characters) or "None", inline=False
+        # )
+        # embed.add_field(name="Matches", value=len(tournament.matches), inline=False)
+        # await interaction.response.send_message(embed=embed)
+        pass
+
+    @app_commands.command(name="add", description="Add a character to a tournament.")
+    async def add_character(
+        self, interaction: discord.Interaction, name: str, char_name: str
+    ):
+        tournament = await self._get_tournament(interaction, name)
+
+        if tournament:
+            if tournament.status != TournamentStatus.OPEN:
+                await interaction.response.send_message(
+                    "Cannot add characters to a tournament that is not open.",
+                    ephemeral=True,
+                )
+                return
+
+            if any(char.name == char_name for char in tournament.characters):
+                await interaction.response.send_message(
+                    f"Character '{char_name}' is already in the tournament.",
+                    ephemeral=True,
+                )
+                return
+
+            new_character = Character(name=char_name)
+            tournament.characters.append(new_character)
             await interaction.response.send_message(
-                f"Tournament '{name}' does not exist.", ephemeral=True
+                f"Character '{char_name}' added to tournament '{name}'."
             )
+
+    @app_commands.command(
+        name="remove", description="Remove a character from a tournament."
+    )
+    async def remove_character(
+        self, interaction: discord.Interaction, tournament_name: str, character: str
+    ):
+        pass
+
+    @app_commands.command(
+        name="leaderboard", description="Display the leaderboard of a tournament"
+    )
+    async def leaderboard(self, interaction: discord.Interaction, name: str):
+        """Display the leaderboard for a specific tournament."""
+        tournament = await self._get_tournament(interaction, name)
+
+        if not tournament:
             return
 
-        embed = discord.Embed(title=f"Tournament: {name}", color=discord.Color.green())
-        embed.add_field(name="Status", value=tournament["status"], inline=False)
-        embed.add_field(
-            name="Characters",
-            value=", ".join(tournament["characters"]) or "None",
-            inline=False,
+        # Get the sorted leaderboard
+        leaderboard = tournament.create_leaderboard()
+
+        # Create the embed
+        embed = discord.Embed(
+            title=f"Leaderboard for Tournament '{name}'", color=discord.Color.gold()
         )
-        embed.add_field(name="Matches", value=len(tournament["matches"]), inline=False)
+        for idx, character in enumerate(leaderboard, start=1):
+            embed.add_field(
+                name=f"{idx}. {character.name}",
+                value=f"ELO: {character.elo}",
+                inline=False,
+            )
+
         await interaction.response.send_message(embed=embed)
 
 
 async def setup(bot):
-    await bot.add_cog(Tournament(bot))
+    await bot.add_cog(TournamentCog(bot))

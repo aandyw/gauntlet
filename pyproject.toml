@@ -6,10 +6,11 @@ build-backend = "setuptools.build_meta"
 name = "guantlet"
 version = "0.0.1"
 description = "Discord bot to create custom tourneys for ELO character ranking."
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 dependencies = [
     "discord.py==2.4.0",
     "python-dotenv",
+    "pydantic",
 ]
 
 [project.optional-dependencies]
@@ -21,7 +22,7 @@ dev = [
 
 [tool.setuptools.packages.find]
 # where = ["."]
-include = ["ai", "api"]
+include = ["bot"]
 # exclude = [".venv*", ".env*", "scripts", "build"]
 
 [tool.black]
