@@ -15,9 +15,10 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = [
-    "black",  # Formatter
-    "ruff",   # Linter
-    "isort",  # Import sorter
+    "black",   # Formatter
+    "ruff",    # Linter
+    "isort",   # Import sorter
+    "pyright", # Type checker
 ]
 
 [tool.setuptools.packages.find]

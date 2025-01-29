@@ -10,3 +10,6 @@ ruff check . --fix
 
 log "Running isort..."
 isort .
+
+log "Running pyright..."
+pyright .
