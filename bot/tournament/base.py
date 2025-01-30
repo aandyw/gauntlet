@@ -1,6 +1,7 @@
-from pydantic import BaseModel, Field
 from enum import StrEnum, auto
 from uuid import uuid4
+
+from pydantic import BaseModel, Field
 
 
 class Character(BaseModel):
@@ -16,7 +17,7 @@ class Match(BaseModel):
     a: Character = Field(...)
     b: Character = Field(...)
     votes: int = 0
-    winner: Character | None = Field(None)
+    winner: Character | None = None
 
 
 class TournamentStatus(StrEnum):
@@ -25,11 +26,19 @@ class TournamentStatus(StrEnum):
     COMPLETED = auto()
 
 
+class Voter(BaseModel):
+    name: str = Field(...)  # discord id?
+    voted: bool = False
+
+
 class Tournament(BaseModel):
     name: str = Field(...)
     status: TournamentStatus = TournamentStatus.OPEN
     characters: list[Character] = []
     matches: list[Match] = []
+    registered_voters: list[Voter] = []
+
+    # TODO: add closing time
 
     def __str__(self):
         return self.name

@@ -1,9 +1,8 @@
-import discord
-from discord.ext import commands
-
-from dotenv import load_dotenv
 from os import getenv
 
+import discord
+from discord.ext import commands
+from dotenv import load_dotenv
 from utils import logger
 
 load_dotenv()
@@ -17,7 +16,7 @@ class GuantletBot(commands.Bot):
 
     # Load the tournament cog
     async def _load_extensions(self):
-        extensions = ["cogs.tournament.tournament"]
+        extensions = ["cogs.tournament"]
         for extension in extensions:
             await self.load_extension(extension)
 
