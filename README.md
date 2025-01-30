@@ -4,13 +4,14 @@ Discord bot to create custom tourneys for ELO character ranking
 ## Local Development
 
 ```bash
-python -m venv ./.venv/gauntlet
-source ./.venv/gauntlet/bin/activate
+bash scripts/setup_env.sh
 ```
 
-Install Discord python library in the virtual environment
+### Precommit
+Apply formatter, linter, type checker, etc.
+
 ```bash
-pip install -U discord.py
+bash scripts/precommit.sh
 ```
 
 ## Discord

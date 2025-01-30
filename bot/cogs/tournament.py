@@ -1,10 +1,10 @@
 from itertools import combinations
 
 import discord
-from tournament.base import Character, Tournament, TournamentStatus, Match
-from tournament.modals import AddCharacterModal
 from discord import app_commands
 from discord.ext import commands
+from tournament.base import Match, Tournament, TournamentStatus
+from tournament.modals import AddCharacterModal
 
 
 class TournamentCog(commands.Cog):
