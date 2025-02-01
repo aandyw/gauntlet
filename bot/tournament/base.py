@@ -6,6 +6,7 @@ from pydantic import BaseModel, Field
 
 class Character(BaseModel):
     name: str = Field(..., examples=["Anya"])
+    source: str = Field(..., examples=["Spy x Family"])
     elo: float = 1000.0
 
     def __str__(self) -> str:
@@ -26,8 +27,12 @@ class TournamentStatus(StrEnum):
     COMPLETED = auto()
 
 
-class Voter(BaseModel):
-    name: str = Field(...)  # discord id?
+class User(BaseModel):
+    id: int = Field(...)
+    name: str = Field(...)
+
+
+class Voter(User):
     voted: bool = False
 
 
@@ -35,16 +40,19 @@ class Tournament(BaseModel):
     name: str = Field(...)
     status: TournamentStatus = TournamentStatus.OPEN
     characters: list[Character] = []
+    registered_voters: dict[int, Voter] = {}
+    creator: User = Field(...)
+
     matches: list[Match] = []
-    registered_voters: list[Voter] = []
 
     # TODO: add closing time
+    # closing_time: str = Field(...)
 
     def __str__(self):
         return self.name
 
     def __repr__(self):
-        return f"<Tournament name={self.name!r} status={self.status!r}>"
+        return f"<Tournament name={self.name} status={self.status} created_by={self.creator.name}>"
 
     def create_leaderboard(self, top_k: int = -1) -> list[Character]:
         """Create a leaderboard of the top k characters.
