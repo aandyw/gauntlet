@@ -1,7 +1,7 @@
 import discord
 from discord.ui import View, Select, Button
 
-from tournament.base import Character
+from guantlet.tournament.models import Character
 
 
 class RemoveCharacterView(View):
@@ -37,13 +37,6 @@ class ListTournamentsView(View):
 
 class VotingView(View):
     def __init__(self, characters: list[str], submit_callback):
-        """
-        Initializes a view with one dropdown per ranking position.
-
-        :param characters: A list of character names to rank.
-        :param submit_callback: A callback coroutine that takes (interaction, rankings)
-                                where rankings is a list of character names ordered by rank.
-        """
         super().__init__(timeout=300)
         self.characters = characters
         self.submit_callback = submit_callback

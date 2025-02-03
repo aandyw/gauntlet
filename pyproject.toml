@@ -3,14 +3,15 @@ requires = ["setuptools", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "guantlet"
+name = "quantdum"
 version = "0.0.1"
-description = "Discord bot to create custom tourneys for ELO character ranking."
+description = "Multiple purpose discord bot."
 requires-python = ">=3.11"
 dependencies = [
     "discord.py==2.4.0",
     "python-dotenv",
     "pydantic",
+    "sqlmodel==0.0.22",
 ]
 
 [project.optional-dependencies]

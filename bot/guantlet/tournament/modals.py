@@ -1,5 +1,5 @@
 import discord
-from tournament.base import Character, Tournament
+from guantlet.tournament.models import Character, Tournament
 from utils import logger
 import traceback
 

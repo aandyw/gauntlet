@@ -3,9 +3,9 @@ from itertools import combinations
 import discord
 from discord import app_commands
 from discord.ext import commands
-from tournament.base import Match, Tournament, TournamentStatus, User, Voter
-from tournament.modals import AddCharacterModal
-from tournament.views import RemoveCharacterView
+from guantlet.tournament.models import Match, Tournament, TournamentStatus, User, Voter
+from guantlet.tournament.modals import AddCharacterModal
+from guantlet.tournament.views import RemoveCharacterView
 
 
 class TournamentCog(commands.Cog):
@@ -213,7 +213,6 @@ class TournamentCog(commands.Cog):
                 )
                 return
 
-            # TODO: Fix error when no characters are present to remove
             if len(self.tournaments[tourney_name].characters) == 0:
                 await interaction.response.send_message(
                     "No characters to remove.", ephemeral=True

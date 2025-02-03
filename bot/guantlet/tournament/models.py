@@ -2,6 +2,7 @@ from enum import StrEnum, auto
 from uuid import uuid4
 
 from pydantic import BaseModel, Field
+# from sqlmodel import SQLModel, Field, create_engine, Session, select
 
 
 class Character(BaseModel):

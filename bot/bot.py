@@ -16,7 +16,7 @@ class GuantletBot(commands.Bot):
 
     # Load the tournament cog
     async def _load_extensions(self):
-        extensions = ["cogs.tournament"]
+        extensions = ["cogs.guantlet.tournament", "cogs.yap"]
         for extension in extensions:
             await self.load_extension(extension)
 
