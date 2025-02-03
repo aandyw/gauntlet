@@ -1,10 +1,3 @@
-"""
-Future Improvements:
-- ✅ Persistence: Store active reminders in a database so they survive bot restarts.
-- ✅ Multiple channels support: Allow specifying a channel when starting a reminder.
-- ✅ Admin-only commands: Restrict yap commands to admins using @commands.has_permissions(administrator=True).
-"""
-
 import discord
 import asyncio
 from discord.ext.commands import Cog
@@ -66,6 +59,7 @@ class YapCog(Cog):
         """
 
         while True:
+            logger.info("I'm about to yap...")
             await asyncio.sleep(minutes * 60)
             await channel.send(f"{role.mention} hop on if you")
 
@@ -151,7 +145,7 @@ class YapCog(Cog):
             embed.add_field(
                 name="",
                 value=f"{yap_session.role.mention} Yapping every {yap_session.minutes} minutes.",
-                inline=True,
+                inline=False,
             )
 
         await interaction.response.send_message(embed=embed, ephemeral=True)
